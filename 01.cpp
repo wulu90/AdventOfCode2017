@@ -22,7 +22,22 @@ void part1() {
     println("{}", res);
 }
 
+void part2() {
+    ifstream input("input/input01");
+    string line;
+    getline(input, line);
+
+    uint res = 0;
+    for (auto it = line.begin(), jt = line.begin() + line.size() / 2; jt != line.end(); ++it, ++jt) {
+        if (*it == *jt) {
+            res += (*it - '0') * 2;
+        }
+    }
+    println("{}", res);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
