@@ -13,6 +13,7 @@ struct program {
     int weight;
     program* parent;
     vector<program*> children;
+    int child_weight_sum;
 };
 
 void parse(const string& str, map<string, program*>& prog_map) {
@@ -34,8 +35,10 @@ void parse(const string& str, map<string, program*>& prog_map) {
     }
 
     if (!prog_map.contains(string{name_sv})) {
-        program* p = new program;
-        p->parent  = nullptr;
+        program* p          = new program;
+        p->parent           = nullptr;
+        p->child_weight_sum = 0;    // !!!
+        p->weight           = 0;    // !!!
         from_chars(weight_sv.begin() + 1, weight_sv.end() - 1, p->weight);
         prog_map.insert({string{name_sv}, p});
     } else {
@@ -45,8 +48,10 @@ void parse(const string& str, map<string, program*>& prog_map) {
     if (!children_sv.empty()) {
         for (auto sv : children_sv) {
             if (!prog_map.contains(string{sv})) {
-                program* p = new program;
-                p->parent  = prog_map.at(string{name_sv});
+                program* p          = new program;
+                p->parent           = prog_map.at(string{name_sv});
+                p->child_weight_sum = 0;    // !!!
+                p->weight           = 0;    // !!!
                 prog_map.insert({string{sv}, p});
             } else {
                 prog_map.at(string{sv})->parent = prog_map.at(string{name_sv});
@@ -56,7 +61,30 @@ void parse(const string& str, map<string, program*>& prog_map) {
     }
 }
 
-void part1() {
+void calc_sub_weight(program* parent) {
+    if (!parent->children.empty()) {
+        for (auto child : parent->children) {
+            calc_sub_weight(child);
+            parent->child_weight_sum += child->child_weight_sum + child->weight;
+        }
+    }
+}
+
+program* find_unblanced(program* parent) {
+    program* unb = parent;
+    map<int, vector<program*>> wei_map;
+    for (auto child : parent->children) {
+        wei_map[child->weight + child->child_weight_sum].push_back(child);
+    }
+
+    if (wei_map.size() != 1) {
+        auto p = wei_map.begin()->second.size() == 1 ? wei_map.begin()->second.front() : wei_map.rbegin()->second.front();
+        unb    = find_unblanced(p);
+    }
+    return unb;
+}
+
+void part1_2() {
     ifstream input("input/input07");
     map<string, program*> prog_map;
 
@@ -64,12 +92,28 @@ void part1() {
         parse(line, prog_map);
     }
 
+    program* root = nullptr;
     for (auto [name, p] : prog_map) {
         if (p->parent == nullptr) {
             println("{}", name);
+            root = p;
             break;
         }
     }
+
+    calc_sub_weight(root);
+
+    auto unb = find_unblanced(root);
+
+    int b_weight = 0;
+    for (auto p : unb->parent->children) {
+        if (p != unb) {
+            b_weight = p->child_weight_sum + p->weight;
+            break;
+        }
+    }
+
+    println("{}", b_weight - unb->child_weight_sum);
 
     for (auto [name, p] : prog_map) {
         if (p != nullptr) {
@@ -79,6 +123,6 @@ void part1() {
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
