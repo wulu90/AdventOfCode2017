@@ -12,19 +12,26 @@ tuple<int, int, int> dir_string_to_adjacent(const tuple<int, int, int>& curr, co
     return {r + dr, s + ds, q + dq};
 }
 
-void part1() {
+int abs_max(const tuple<int, int, int>& coord) {
+    return max({abs(get<0>(coord)), abs(get<1>(coord)), abs(get<2>(coord))});
+}
+
+void part1_2() {
     ifstream input("input/input11");
     tuple<int, int, int> curr{0, 0, 0};    // r,s,q coordinate;
+    int furthest_away = 0;
     for (string line; getline(input, line, ',');) {
         if (line.back() == '\n' || line.back() == '\r') {
             line.pop_back();
         }
-        curr = dir_string_to_adjacent(curr, line);
+        curr          = dir_string_to_adjacent(curr, line);
+        furthest_away = max(furthest_away, abs_max(curr));
     }
     println("{}", curr);    // r,s,q coordinate abs value max is the minmal steps from 0,0,0
+    println("{}", furthest_away);
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
