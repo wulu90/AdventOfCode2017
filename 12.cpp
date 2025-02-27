@@ -58,7 +58,46 @@ void part1() {
     println("{}", group_zero.size());
 }
 
+void part2() {
+    ifstream input("input/input12");
+    map<int, vector<int>> comm_mat;
+    set<int> all;
+    for (string line; getline(input, line);) {
+        auto [lhs, rhs_v] = parse(line);
+        for (auto rhs : rhs_v) {
+            comm_mat[lhs].push_back(rhs);
+            comm_mat[rhs].push_back(lhs);
+            all.insert(lhs);
+            all.insert(rhs);
+        }
+    }
+
+    int group_count = 0;
+
+    while (!all.empty()) {
+        ++group_count;
+        int seed = *all.begin();
+        all.erase(seed);
+
+        queue<int> q;
+        q.push(seed);
+
+        while (!q.empty()) {
+            for (auto rhs : comm_mat[q.front()]) {
+                if (all.contains(rhs)) {
+                    q.push(rhs);
+                    all.erase(rhs);
+                }
+            }
+            q.pop();
+        }
+    }
+
+    println("{}", group_count);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
