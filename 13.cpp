@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <charconv>
 #include <fstream>
 #include <map>
@@ -39,7 +40,32 @@ void part1() {
     println("{}", severity);
 }
 
+void part2() {
+    ifstream input("input/input13");
+    map<int, int> depth_range;
+    for (string line; getline(input, line);) {
+        depth_range.insert(parse(line));
+    }
+
+    int severity = 0;
+
+    int delay = 0;
+    while (true) {
+        auto caught = any_of(depth_range.begin(), depth_range.end(), [&delay](auto&& dr) {
+            auto [d, r] = dr;
+            return (d + delay) % (2 * (r - 1)) == 0;
+        });
+        if (!caught) {
+            break;
+        }
+        ++delay;
+    }
+
+    println("{}", delay);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
