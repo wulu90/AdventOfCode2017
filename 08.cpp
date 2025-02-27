@@ -52,15 +52,18 @@ instruction parse(const string& str) {
 void part1() {
     ifstream input("input/input08");
     map<string, int> reg_map;
+    int highest = INT32_MIN;
     for (string line; getline(input, line);) {
         auto [reg_m, func_m, amount, reg_c, func_c, num_c] = parse(line);    // modify,compare
         if (func_c(reg_map[reg_c], num_c)) {
             reg_map[reg_m] = func_m(reg_map[reg_m], amount);
+            highest        = max(highest, reg_map[reg_m]);
         }
     }
 
     auto vv = reg_map | views::values;
     println("{}", *max_element(vv.begin(), vv.end()));
+    println("{}", highest);
 }
 
 int main() {
