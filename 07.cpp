@@ -35,10 +35,8 @@ void parse(const string& str, map<string, program*>& prog_map) {
     }
 
     if (!prog_map.contains(string{name_sv})) {
-        program* p          = new program;
-        p->parent           = nullptr;
-        p->child_weight_sum = 0;    // !!!
-        p->weight           = 0;    // !!!
+        program* p = new program();
+        p->parent  = nullptr;
         from_chars(weight_sv.begin() + 1, weight_sv.end() - 1, p->weight);
         prog_map.insert({string{name_sv}, p});
     } else {
@@ -48,10 +46,8 @@ void parse(const string& str, map<string, program*>& prog_map) {
     if (!children_sv.empty()) {
         for (auto sv : children_sv) {
             if (!prog_map.contains(string{sv})) {
-                program* p          = new program;
-                p->parent           = prog_map.at(string{name_sv});
-                p->child_weight_sum = 0;    // !!!
-                p->weight           = 0;    // !!!
+                program* p = new program();
+                p->parent  = prog_map.at(string{name_sv});
                 prog_map.insert({string{sv}, p});
             } else {
                 prog_map.at(string{sv})->parent = prog_map.at(string{name_sv});
