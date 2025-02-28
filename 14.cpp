@@ -1,5 +1,8 @@
+#include <array>
 #include <fstream>
 #include <numeric>
+#include <queue>
+#include <set>
 #include <vector>
 
 using namespace std;
@@ -73,7 +76,54 @@ void part1() {
     println("{}", used);
 }
 
+void part2() {
+    ifstream input("input/input14");
+    string line;
+    getline(input, line);
+
+    array<array<uint8_t, 16>, 128> diskuesd;
+    for (size_t i = 0; i < 128; ++i) {
+        diskuesd[i] = knot_hash(line + format("-{}", i));
+    }
+
+    auto isused = [&diskuesd](size_t i, size_t j) {
+        uint8_t flag = 1 << (7 - j % 8);
+        return (diskuesd[i][j / 8] & flag) == flag;
+    };
+
+    set<pair<size_t, size_t>> grouped;
+    uint32_t group_count = 0;
+    for (size_t i = 0; i < 128; ++i) {
+        for (size_t j = 0; j < 128; ++j) {
+            if (isused(i, j) && !grouped.contains({i, j})) {
+                ++group_count;
+                queue<pair<size_t, size_t>> q;
+                q.push({i, j});
+
+                while (!q.empty()) {
+                    auto curr = q.front();
+                    q.pop();
+
+                    static const array<array<int, 2>, 4> deltas{{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}};
+
+                    for (auto [dr, dc] : deltas) {
+                        auto r = curr.first + dr;
+                        auto c = curr.second + dc;
+                        if (r < 128 && c < 128 && isused(r, c) && !grouped.contains({r, c})) {
+                            q.push({r, c});
+                            grouped.insert({r, c});
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    println("{}", group_count);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
