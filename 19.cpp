@@ -11,6 +11,7 @@ void part1() {
         routing_diagram.push_back(line);
     }
     string path;
+    int step = 0;
     static const array<array<int, 2>, 4> direction{{{1, 0}, {0, -1}, {-1, 0}, {0, 1}}};
     size_t curr_dire = 0;
 
@@ -19,6 +20,7 @@ void part1() {
     size_t c = pos;
     while (true) {
         while (routing_diagram[r][c] != ' ') {
+            ++step;
             if (isalpha(routing_diagram[r][c])) {
                 path.push_back(routing_diagram[r][c]);
             }
@@ -38,6 +40,7 @@ void part1() {
             curr_dire = n_dire;
             r         = n_r;
             c         = n_c;
+            ++step;
         }
 
         if (end) {
@@ -49,6 +52,7 @@ void part1() {
                 curr_dire = n_dire;
                 r         = n_r;
                 c         = n_c;
+                ++step;
             }
         }
 
@@ -58,6 +62,7 @@ void part1() {
     }
 
     println("{}", path);
+    println("{}", step);
 }
 
 int main() {
