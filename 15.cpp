@@ -36,7 +36,33 @@ void part1() {
     println("{}", judge_count);
 }
 
+void part2() {
+    ifstream input("input/input15");
+    string line;
+    getline(input, line);
+    int64_t gen_A = parse(line);
+
+    getline(input, line);
+    int64_t gen_B = parse(line);
+
+    int judge_count = 0;
+    int round       = 5'000'000;
+    while (round > 0) {
+        gen_A = (gen_A * 16807) % 2147483647;
+        gen_B = (gen_B * 48271) % 2147483647;
+        if (gen_A % 4 == 0 && gen_B % 8 == 0) {
+            --round;
+            if (compare_lowest_16bits(gen_A, gen_B)) {
+                ++judge_count;
+            }
+        }
+    }
+
+    println("{}", judge_count);
+}
+
 int main() {
     part1();
+    part2();
     return 0;
 }
