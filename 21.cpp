@@ -29,20 +29,6 @@ pair<string, string> parse(const string& str) {
     return {lstr, rstr};
 }
 
-vector<string> rotate_flip_2(const string& str) {
-    /// 01
-    /// 23 => 01/23
-    /// 23/01, 10/32
-    /// 20/31, 32/10, 13/02, 01/23
-
-    string str1{str[3], str[4], '/', str[0], str[1]};
-    string str2{str[1], str[0], '/', str[4], str[3]};
-    string str3{str[3], str[0], '/', str[4], str[1]};
-    string str4{str[4], str[3], '/', str[1], str[0]};
-    string str5{str[1], str[4], '/', str[0], str[3]};
-    return {str1, str2, str3, str4, str5};
-}
-
 vector<string> rotate_flip_2_s(const string& str) {
     /// 01
     /// 23 => 01/23
@@ -54,21 +40,6 @@ vector<string> rotate_flip_2_s(const string& str) {
     string str3{str[2], str[0], str[3], str[1]};
     string str4{str[3], str[2], str[1], str[0]};
     string str5{str[1], str[3], str[0], str[2]};
-    return {str1, str2, str3, str4, str5};
-}
-
-vector<string> rotate_flip_3(const string& str) {
-    /// 012/
-    /// 345/
-    /// 678 => 012/345/678
-    /// 678/345/012 210/543/876
-    /// 630/741/852 876/543/210 258/147/036
-
-    string str1{str[8], str[9], str[10], '/', str[4], str[5], str[6], '/', str[0], str[1], str[2]};
-    string str2{str[2], str[1], str[0], '/', str[6], str[5], str[4], '/', str[10], str[9], str[8]};
-    string str3{str[8], str[4], str[0], '/', str[9], str[5], str[1], '/', str[10], str[6], str[2]};
-    string str4{str[10], str[9], str[8], '/', str[6], str[5], str[4], '/', str[2], str[1], str[0]};
-    string str5{str[2], str[6], str[10], '/', str[1], str[5], str[9], '/', str[0], str[4], str[8]};
     return {str1, str2, str3, str4, str5};
 }
 
@@ -87,22 +58,12 @@ vector<string> rotate_flip_3_s(const string& str) {
     return {str1, str2, str3, str4, str5};
 }
 
-void part1() {
-    ifstream input("input/input21");
-    map<string, string> rules;
-    for (string line; getline(input, line);) {
-        auto [s1, s2] = parse(line);
-        rules.insert({s1, s2});
-        auto strvec = s1.size() == 4 ? rotate_flip_2_s(s1) : rotate_flip_3_s(s1);
-        for (auto& s : strvec) {
-            rules.insert({s, s2});
-        }
-    }
-
+void run(int iterations, const map<string, string>& rules) {
     vector<string> image{".#.", "..#", "###"};
     size_t side = 3;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < iterations; ++i) {
+        // println("{},{}", i, side);
         if (side % 2 == 0) {
             size_t n = side / 2;
             side     = n * 3;
@@ -113,11 +74,16 @@ void part1() {
             for (size_t j = 0; j < n; ++j) {
                 for (size_t k = 0; k < n; ++k) {
                     string pattern{image[j * 2][k * 2], image[j * 2][k * 2 + 1], image[j * 2 + 1][k * 2], image[j * 2 + 1][k * 2 + 1]};
+
                     string rpl;
-                    for (auto s : rotate_flip_2_s(pattern)) {
-                        if (rules.contains(s)) {
-                            rpl = rules[s];
-                            break;
+                    if (rules.contains(pattern)) {
+                        rpl = rules.at(pattern);
+                    } else {
+                        for (auto s : rotate_flip_2_s(pattern)) {
+                            if (rules.contains(s)) {
+                                rpl = rules.at(s);
+                                break;
+                            }
                         }
                     }
 
@@ -145,10 +111,14 @@ void part1() {
                     }
 
                     string rpl;
-                    for (auto s : rotate_flip_3_s(pattern)) {
-                        if (rules.contains(s)) {
-                            rpl = rules[s];
-                            break;
+                    if (rules.contains(pattern)) {
+                        rpl = rules.at(pattern);
+                    } else {
+                        for (auto s : rotate_flip_3_s(pattern)) {
+                            if (rules.contains(s)) {
+                                rpl = rules.at(s);
+                                break;
+                            }
                         }
                     }
 
@@ -175,7 +145,22 @@ void part1() {
     println("{}", on_count);
 }
 
+void part1_2() {
+    ifstream input("input/input21");
+    map<string, string> rules;
+    for (string line; getline(input, line);) {
+        auto [s1, s2] = parse(line);
+        rules.insert({s1, s2});
+        auto strvec = s1.size() == 4 ? rotate_flip_2_s(s1) : rotate_flip_3_s(s1);
+        for (auto& s : strvec) {
+            rules.insert({s, s2});
+        }
+    }
+    run(5, rules);
+    run(18, rules);
+}
+
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
