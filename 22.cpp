@@ -24,15 +24,15 @@ void part1() {
     }
 
     pair<int, int> curr_coord{0, 0};
-    int curr_facing     = 0;
+    size_t curr_facing  = 0;
     int cause_infection = 0;
     static const array<array<int, 2>, 4> deltas{{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}};
     for (int i = 0; i < 10000; ++i) {
         if (infected.contains(curr_coord)) {    // infected
-            curr_facing = curr_facing == 3 ? 0 : curr_facing + 1;
+            curr_facing = (curr_facing + 1) % 4;
             infected.erase(curr_coord);
         } else {
-            curr_facing = curr_facing == 0 ? 3 : curr_facing - 1;
+            curr_facing = (curr_facing - 1) % 4;
             infected.insert(curr_coord);
             ++cause_infection;
         }
@@ -63,12 +63,12 @@ void part2() {
     set<pair<int, int>> flagged;
 
     pair<int, int> curr_coord{0, 0};
-    int curr_facing     = 0;
+    size_t curr_facing  = 0;
     int cause_infection = 0;
     static const array<array<int, 2>, 4> deltas{{{-1, 0}, {0, 1}, {1, 0}, {0, -1}}};
     for (int i = 0; i < 10000000; ++i) {
         if (infected.contains(curr_coord)) {    // infected
-            curr_facing = curr_facing == 3 ? 0 : curr_facing + 1;
+            curr_facing = (curr_facing + 1) % 4;
             infected.erase(curr_coord);
             flagged.insert(curr_coord);
         } else if (weakened.contains(curr_coord)) {
@@ -76,18 +76,10 @@ void part2() {
             infected.insert(curr_coord);
             ++cause_infection;
         } else if (flagged.contains(curr_coord)) {
-            if (curr_facing == 0) {
-                curr_facing = 2;
-            } else if (curr_facing == 1) {
-                curr_facing = 3;
-            } else if (curr_facing == 2) {
-                curr_facing = 0;
-            } else {
-                curr_facing = 1;
-            }
+            curr_facing = (curr_facing + 2) % 4;
             flagged.erase(curr_coord);
         } else {
-            curr_facing = curr_facing == 0 ? 3 : curr_facing - 1;
+            curr_facing = (curr_facing - 1) % 4;
             weakened.insert(curr_coord);
         }
         curr_coord = make_pair(curr_coord.first + deltas[curr_facing][0], curr_coord.second + deltas[curr_facing][1]);
