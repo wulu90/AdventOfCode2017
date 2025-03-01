@@ -23,11 +23,12 @@ set<pair<int, int>> find_next(const vector<pair<int, int>>& component_vec, int c
     return opts;
 }
 
-void backtrace(const vector<pair<int, int>> component_vec, int& strongest, int curr_port, vector<pair<int, int>> bridge) {
+void backtrace(const vector<pair<int, int>> component_vec, int& strongest, pair<int, int>& len_strength, int curr_port,
+               vector<pair<int, int>> bridge) {
     auto opts = find_next(component_vec, curr_port, bridge);
     for (auto& op : opts) {
         bridge.push_back(op);
-        backtrace(component_vec, strongest, op.first == curr_port ? op.second : op.first, bridge);
+        backtrace(component_vec, strongest, len_strength, op.first == curr_port ? op.second : op.first, bridge);
         bridge.pop_back();
     }
     int strength = 0;
@@ -37,9 +38,14 @@ void backtrace(const vector<pair<int, int>> component_vec, int& strongest, int c
     // println("{},{}", strength, bridge);
 
     strongest = max(strongest, strength);
+
+    if (bridge.size() >= len_strength.first) {
+        len_strength.first  = bridge.size();
+        len_strength.second = max(len_strength.second, strength);
+    }
 }
 
-void part1() {
+void part1_2() {
     ifstream input("input/input24");
     multimap<int, int> conn_map;
     vector<pair<int, int>> component_vec;
@@ -56,11 +62,13 @@ void part1() {
         }
     }
     int strongest = 0;
-    backtrace(component_vec, strongest, 0, {});
+    pair<int, int> len_strength;
+    backtrace(component_vec, strongest, len_strength, 0, {});
     println("{}", strongest);
+    println("{}", len_strength.second);
 }
 
 int main() {
-    part1();
+    part1_2();
     return 0;
 }
