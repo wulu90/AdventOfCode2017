@@ -69,54 +69,22 @@ void part1() {
     println("{}", mul_count);
 }
 
-void part2() {
-    ifstream input("../input/input23");
-    vector<string> ins_vec;
-    for (string line; getline(input, line);) {
-        ins_vec.push_back(line);
-    }
-    array<int64_t, 8> regs{1, 0, 0, 0, 0, 0, 0, 0};
-    size_t off = 0;
-    while (off < ins_vec.size()) {
-        auto& ins = ins_vec[off];
-        if (ins.starts_with("mul")) {
-            mulxy(ins, regs);
-            ++off;
-        } else if (ins.starts_with("set")) {
-            setxy(ins, regs);
-            ++off;
-        } else if (ins.starts_with("sub")) {
-            subxy(ins, regs);
-            ++off;
-        } else {    // jnz
-            int64_t num = 0;
-            if (isalpha(ins[4])) {
-                num = regs[ins[4] - 'a'];
-            } else {
-                auto p = ins.rfind(' ');
-                from_chars(ins.data() + 4, ins.data() + p, num);
-            }
-            if (num != 0) {
-                off += get_y(ins, regs);
-            } else {
-                ++off;
-            }
-        }
-    }
-
-    println("{}", regs);
-}
-
-/**
 void part2_1() {
-    int a = 1;
-    int b = 0;
-    int c = 0;
-    int d = 0;
-    int e = 0;
-    int f = 0;
-    int g = 0;
-    int h = 0;
+    // not use int because d*e > int32_max and lowest 32 bits same with b
+    // 51979*82631=4295076749 when b 109453
+    // 100000000000000011010101110001101
+    //                 11010101110001101
+    // then g=d*e=b in 32bits, f=0; h+=1;
+    // but 109453 is a prime number, should not record in h
+    // the second&third do-while loop is check a number is prime, when not then f=0,h+1
+    int64_t a = 1;
+    int64_t b = 0;
+    int64_t c = 0;
+    int64_t d = 0;
+    int64_t e = 0;
+    int64_t f = 0;
+    int64_t g = 0;
+    int64_t h = 0;
 
     b = 93;
     c = b;
@@ -161,7 +129,7 @@ void part2_1() {
     } while (true);
     println("{}", h);
 }
-*/
+
 bool is_prime(int num) {
     for (int i = 2; i * i <= num; ++i) {
         if (num % i == 0) {
@@ -184,6 +152,7 @@ void part2_2() {
 
 int main() {
     part1();
+    // part2_1();
     part2_2();
     return 0;
 }
