@@ -33,12 +33,12 @@ int main() {
             state              = curr_value == 0 ? 4 : 5;    // E:F
             break;
         case 4:    // E
-            slot_value[cursor] = curr_value == 0 ? 1 : 1;
+            slot_value[cursor] = 1;
             cursor             = cursor - 1;
             state              = curr_value == 0 ? 0 : 2;    // A:C
             break;
         case 5:    // E
-            slot_value[cursor] = curr_value == 0 ? 1 : 1;
+            slot_value[cursor] = 1;
             cursor             = curr_value == 0 ? cursor - 1 : cursor + 1;
             state              = curr_value == 0 ? 4 : 0;    // E:A
             break;
